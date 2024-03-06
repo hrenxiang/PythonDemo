@@ -256,6 +256,6 @@ def run(args):
 
 if __name__ == "__main__":
     try:
-        run(["-w", "/Users/hrenxiang/Downloads/PingFang1.ttf"])
+        run(["-w", "/Users/hrenxiang/Downloads/STHeiti Medium.ttc"])
     except OTCError as e:
         print(str(e))  # 直接使用异常对象的字符串形式输出异常信息
