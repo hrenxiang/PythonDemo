@@ -3,13 +3,21 @@
 get_file_type() {
     file_path='/path/to/some/213'
     FILE_HASH=$(basename -- ${file_path} | tr -d '/\\')
-    echo 文件哈希值: "$FILE_HASH"
+    echo "文件哈希值: $FILE_HASH" >&2
     set -x
-    sleep 10
     FILE_TYPE=$(mysql -h 127.0.0.1 -u root -p12345678 -D pos -Nse "select * from es_activity where id = \"$FILE_HASH\"")
-    echo 文件类型: "$FILE_TYPE"
+    echo "$FILE_TYPE"
     set +x
 }
 
-# 调用函数
-get_file_type
+# 定义 test 函数
+test() {
+    # 捕获 get_file_type 函数的输出
+    local result
+    result=$(get_file_type)
+    echo "get_file_type 函数的输出:"
+    echo "$result"
+}
+
+# 调用 test 函数
+test
