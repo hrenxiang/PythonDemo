@@ -1,19 +1,44 @@
 import pandas as pd
 import torch
 from datasets import Dataset
-from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+from transformers import BertForSequenceClassification, Trainer, TrainingArguments, BertTokenizer
 
 # 创建一个示例 DataFrame
 data = {
     'text': [
-        '今天是晴天',
-        '今天是阴天',
-        '今天是雨天',
-        '今天是多云'
+        "我最近皮肤上长了很多痘痘，怎么办？",
+        "我怀孕了，想了解一下产前检查。",
+        "孩子最近咳嗽了好几天，应该怎么办？",
+        "昨天摔了一跤，腿部剧烈疼痛。",
+        "最近老是头痛，感觉有些力不从心。",
+        "我的月经总是很不规律，不知道是不是有问题。",
+        "孩子老是拉肚子，吃了药也不见好转。",
+        "我妈妈的血糖一直很高，需要怎么控制？",
+        "我发现自己有皮肤过敏的情况，不知道怎么办。",
+        "我最近脖子痛，动不了，应该去哪个科看病？",
+        "我的儿子最近有发热症状，好像是感冒。",
+        "月经不调，有时候特别疼，是不是妇科的问题？",
+        "我的小孩昨天摔了一跤，膝盖好像肿了。",
+        "经常头晕，心慌，胸口不舒服，可能是什么问题？",
+        "我感觉腹部很胀痛，吃什么药好？"
     ],
     'label': [
-        2, 2, 2, 2
-    ]  # 0: 问题, 1: 预定
+        0,  # 皮肤科问题
+        1,  # 妇科问题
+        2,  # 儿科问题
+        3,  # 外科问题
+        4,  # 内科问题
+        1,  # 妇科问题
+        2,  # 儿科问题
+        4,  # 内科问题
+        0,  # 皮肤科问题
+        3,  # 外科问题
+        2,  # 儿科问题
+        1,  # 妇科问题
+        3,  # 外科问题
+        4,  # 内科问题
+        4  # 内科问题
+    ]  # 0: 皮肤科问题, 1: 妇科问题，2: 儿科问题、3: 外科问题，4: 内科问题
 }
 
 df = pd.DataFrame(data)
@@ -24,26 +49,13 @@ dataset = Dataset.from_pandas(df)
 # 使用 train_test_split 将数据集划分为训练集和测试集
 dataset = dataset.train_test_split(test_size=0.2)  # 80% 训练集, 20% 测试集
 
-# 查看分割后的数据集
-print(dataset)
-
 # 获取训练集和测试集
 train_dataset = dataset['train']
 test_dataset = dataset['test']
 
-# 显示训练集样本
-print("训练集：")
-print(train_dataset[0])
-
-# 显示测试集样本
-print("测试集：")
-print(test_dataset[0])
-
-from transformers import BertForSequenceClassification, Trainer, TrainingArguments, BertTokenizer
-
 # 加载预训练模型和分词器
 # model = BertForSequenceClassification.from_pretrained('bert-base-chinese', num_labels=2)
-model = BertForSequenceClassification.from_pretrained('./results/checkpoint-12', num_labels=3)
+model = BertForSequenceClassification.from_pretrained('bert-base-chinese', num_labels=5)
 tokenizer = BertTokenizer.from_pretrained('bert-base-chinese')
 
 
@@ -60,7 +72,7 @@ test_dataset = test_dataset.map(preprocess_function, batched=True)
 training_args = TrainingArguments(
     output_dir='./results',  # 输出目录
     num_train_epochs=3,  # 训练周期
-    per_device_train_batch_size=4,  # 每个设备的训练批量大小
+    per_device_train_batch_size=2,  # 每个设备的训练批量大小
     per_device_eval_batch_size=16,  # 每个设备的评估批量大小
     warmup_steps=500,  # 预热步骤数
     weight_decay=0.01,  # 权重衰减
@@ -85,7 +97,7 @@ eval_results = trainer.evaluate()
 print("评估结果：", eval_results)
 
 # 输入文本
-input_text = "今天有雨"
+input_text = "最近背部疼痛，长期坐办公室是不是造成的？"
 inputs = tokenizer(input_text, return_tensors="pt")
 
 # 将模型和输入移动到 CPU
