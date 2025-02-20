@@ -29,7 +29,7 @@ parser = StrOutputParser()
 
 chain = prompt_template | llm | parser
 
-res = chain.invoke({'language': 'English', 'text': '我爱你，爱着你，就像老鼠爱大米！'})
+res = chain.invoke({'language': '中文', 'text': 'Requirement already satisfied:'})
 
 print(f"简便写法的结果是：{res}")
 
