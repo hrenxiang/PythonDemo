@@ -1,3 +1,4 @@
+import importlib
 import os
 
 from langchain_core.messages import HumanMessage
@@ -7,12 +8,7 @@ from langchain_ollama import OllamaLLM
 from langchain_community.chat_message_histories import ChatMessageHistory
 
 # 通过 os.environ 改变当前进程的环境变量
-os.environ['LANGSMITH_TRACING'] = 'true'
-os.environ['LANGSMITH_ENDPOINT'] = 'https://api.smith.langchain.com'
-# 这里需要自己登录 LangChain Smith 创建自己的 API KEY
-os.environ['LANGSMITH_API_KEY'] = ''
-# 自己当前项目的名称
-os.environ['LANGSMITH_PROJECT'] = 'python-demo-ai-langchain'
+importlib.import_module("ai.langchain.set_env")
 
 # ========================================== 本地调用 ==========================================
 # 指定模型
